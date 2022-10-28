@@ -16,13 +16,16 @@ filetype plugin indent on
 call plug#begin("~/.vim/plugged")
 	" File Explorer
 	Plug 'scrooloose/nerdtree'    " File explorer
-	Plug 'ryanoasis/vim-devicons' " Add Icons to the file explorer (This also requires you to install a nerdfont
 
 	" Code completion/syntax Highlighting
 	Plug 'neoclide/coc.nvim', {'branch':'release'}
 	Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-
+	
+	" Go stuff
 	Plug 'ray-x/go.nvim'
+
+	" My plugin
+	" Plug '~/github/danielh2942/todo.nvim'
 
 	" Git support
 	Plug 'lewis6991/gitsigns.nvim'
@@ -30,6 +33,7 @@ call plug#begin("~/.vim/plugged")
 	" Pretty themes/ Display stuff
 	Plug 'overcache/NeoSolarized' " Pretty theme
 	Plug 'morhetz/gruvbox'
+	Plug 'gelguy/wilder.nvim'
 
 	" Visual fluff
 	Plug 'ryanoasis/vim-devicons'       " Add icons to nerdtree
@@ -65,6 +69,34 @@ require'nvim-treesitter.configs'.setup {
 	},
 }
 
+local wilder = require('wilder')
+wilder.setup({modes = {':', '/', '?'}})
+
+wilder.set_option('pipeline', {
+  wilder.branch(
+    wilder.cmdline_pipeline({
+      fuzzy = 1,
+      set_pcre2_pattern = 1,
+    }),
+    wilder.python_search_pipeline({
+      pattern = 'fuzzy',
+    })
+  ),
+})
+
+local highlighters = {
+  wilder.pcre2_highlighter(),
+  wilder.basic_highlighter(),
+}
+wilder.set_option('renderer', wilder.renderer_mux({
+  [':'] = wilder.popupmenu_renderer({
+    highlighter = highlighters,
+  }),
+  ['/'] = wilder.wildmenu_renderer({
+    highlighter = highlighters,
+  }),
+}))
+
 require('go').setup()
 
 require('gitsigns').setup {
@@ -89,7 +121,7 @@ require('gitsigns').setup {
   current_line_blame_opts = {
     virt_text = true,
     virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
-    delay = 1000,
+    delay = 1,
     ignore_whitespace = false,
   },
   current_line_blame_formatter = '<author>, <author_time:%Y-%m-%d> - <summary>',
@@ -144,6 +176,7 @@ require('winbar').setup({
         'toggleterm',
         'qf',
 		'bash',
+		'',
     }
 })
 require('feline').setup()
