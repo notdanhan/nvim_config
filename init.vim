@@ -31,17 +31,29 @@ call plug#begin("~/.vim/plugged")
 	Plug 'lewis6991/gitsigns.nvim'
 
 	" Pretty themes/ Display stuff
+	Plug 'sts10/vim-pink-moon'
 	Plug 'overcache/NeoSolarized' " Pretty theme
 	Plug 'morhetz/gruvbox'
 	Plug 'gelguy/wilder.nvim'
 
 	" Visual fluff
-	Plug 'ryanoasis/vim-devicons'       " Add icons to nerdtree
-	Plug 'kyazdani42/nvim-web-devicons' " Add Icons to feline
-	Plug 'fgheng/winbar.nvim'           " Add winbar 
-	Plug 'feline-nvim/feline.nvim'      " better status bar
-	Plug 'SmiteshP/nvim-navic'          " Icons for winbar
-	Plug 'neovim/nvim-lspconfig'        
+	Plug 'ryanoasis/vim-devicons'       "Add icons to nerdtree
+	Plug 'kyazdani42/nvim-web-devicons' "Add Icons to feline
+	Plug 'fgheng/winbar.nvim'           "Add winbar 
+	Plug 'freddiehaddad/feline.nvim'    "better status bar
+	Plug 'SmiteshP/nvim-navic'          "Icons for winbar
+	Plug 'neovim/nvim-lspconfig'
+	Plug 'folke/todo-comments.nvim'		"Some highlight for todos and stuff
+
+	" wakatime
+	Plug 'wakatime/vim-wakatime'
+
+	" Telescope
+	Plug 'nvim-lua/plenary.nvim'
+	Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.2' }
+	Plug 'ludovicchabant/vim-gutentags' "Jump to definitions in other files, needs ctags!
+
+	Plug 'sakhnik/nvim-gdb'				"GDB plugin
 call plug#end()
 
 " Set theme
@@ -49,7 +61,9 @@ if (has("termguicolors"))
 	set termguicolors
 endif
 
-colorscheme gruvbox
+" colorscheme gruvbox
+
+colorscheme pink-moon
 
 " Set font and encoding
 set encoding=UTF-8
@@ -57,7 +71,7 @@ set encoding=UTF-8
 lua << EOF
 
 require'nvim-treesitter.configs'.setup {
-	ensure_installed = {"c","lua","cpp","go","python"},
+	ensure_installed = {"c","lua","cpp","go","python","javascript"},
 
 	sync_install = false,
 
@@ -181,7 +195,80 @@ require('winbar').setup({
 })
 require('feline').setup()
 
+require('todo-comments').setup()
+
+-- Telescope mappings
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
+vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
+vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+
+-- ESC out of terminal mode
+vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
+
 EOF
+
+function! PutTermPanel(buf, side, size) abort
+  " new term if no buffer
+  if a:buf == 0
+    term
+  else
+    execute "sp" bufname(a:buf)
+  endif
+  " default side if wrong argument
+  if stridx("hjklHJKL", a:side) == -1
+    execute "wincmd" "J"
+  else
+    execute "wincmd" a:side
+  endif
+  " horizontal split resize
+  if stridx("jkJK", a:side) >= 0
+    if ! a:size > 0
+      resize 6
+    else
+      execute "resize" a:size
+    endif
+    return
+  endif
+  " vertical split resize
+  if stridx("hlHL", a:side) >= 0
+    if ! a:size > 0
+      vertical resize 6
+    else
+      execute "vertical resize" a:size
+    endif
+  endif
+endfunction
+
+function! s:ToggleTerminal(side, size) abort
+  let tpbl=[]
+  let closed = 0
+  let tpbl = tabpagebuflist()
+  " hide visible terminals
+  for buf in filter(range(1, bufnr('$')), 'bufexists(bufname(v:val)) && index(tpbl, v:val)>=0')
+    if getbufvar(buf, '&buftype') ==? 'terminal'
+      silent execute bufwinnr(buf) . "hide"
+      let closed += 1
+    endif
+  endfor
+  if closed > 0
+    return
+  endif
+  " open first hidden terminal
+  for buf in filter(range(1, bufnr('$')), 'bufexists(v:val) && index(tpbl, v:val)<0')
+    if getbufvar(buf, '&buftype') ==? 'terminal'
+      call PutTermPanel(buf, a:side, a:size)
+      return
+    endif
+  endfor
+  " open new terminal
+  call PutTermPanel(0, a:side, a:size)
+endfunction
+
+nnoremap <leader>tt :rightbelow term<CR>:resize 15<CR>
+
+inoremap <expr> <tab> coc#pum#visible() ? coc#pum#confirm() : "\<TAB>"
 
 autocmd VimEnter * NERDTree
 autocmd VimEnter * wincmd p
