@@ -10,3 +10,5 @@ require("danhan.config.lazy")
 
 -- Apply customizations
 vim.cmd.colorscheme(require("danhan.core.constants").colorscheme)
+require("danhan.config.options")
+require("danhan.config.keymaps")
