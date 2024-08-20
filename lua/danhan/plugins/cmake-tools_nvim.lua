@@ -16,9 +16,9 @@ return {
 			--       ${variant:xx}
 			cmake_build_directory = function()
 				if osys.iswin32 then
-					return "out\\${variant:buildType}"
+					return "build\\${variant:buildType}"
 				end
-				return "out/${variant:buildType}"
+				return "build/${variant:buildType}"
 			end, -- this is used to specify generate directory for cmake, allows macro expansion, can be a string or a function returning the string, relative to cwd.
 			cmake_soft_link_compile_commands = true, -- this will automatically make a soft link from compile commands file to project root dir
 			cmake_compile_commands_from_lsp = false, -- this will automatically set compile commands file location using lsp, to use it, please set `cmake_soft_link_compile_commands` to false
@@ -136,4 +136,11 @@ return {
 			cmake_virtual_text_support = true, -- Show the target related to current file using virtual text (at right corner)
 		})
 	end,
+
+	keys = {
+		{ "<leader>cmb", "<cmd>CMakeBuild<CR>", desc = "CMake Build" },
+		{ "<leader>cmg", "<cmd>CMakeGenerate<CR>", desc = "CMake Generate" },
+		{ "<leader>cmr", "<cmd>CMakeRun<CR>", desc = "CMake Run" },
+		{ "<leader>cmt", "<cmd>CMakeRunTest<CR>", desc = "CMake Run Tests" },
+	},
 }
