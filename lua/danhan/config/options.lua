@@ -6,6 +6,10 @@ local options = {
 	number = true, -- line numbers
 	relativenumber = true, -- have relative numbers above and below
 	smartindent = true, -- indent at right times
+	hlsearch = true,
+	incsearch = true,
+	expandtab = false,
+	ttyfast = true,
 	signcolumn = "yes", -- signs?
 	softtabstop = 4, -- Backspace on tab goes back 4 spaces
 }
