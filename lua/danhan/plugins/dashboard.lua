@@ -27,7 +27,7 @@ return {
 '     三三三三三三三三三三三三三三三三三三三三三三三三三三三三',
 '       三三三三三三三三三三三三三三三三三三三三三三三三三三三三',
 '',
-'',
+'         My somewhat scuffed neovim config',
 '',
 		}
 		local icons = require("danhan.core.icons")
@@ -50,6 +50,7 @@ return {
           { key = "h", icon = icons.ui.Check, desc = " Check Health", action = "checkhealth"},
           { key = "m", icon = icons.ui.Mason, desc = " Mason", action = "Mason" },
           { key = "l", icon = icons.ui.Event, desc =  " Lazy", action = "Lazy" },
+          { key = "c", icon = icons.ui.Gear, desc = " Config", action = [[lua LazyVim.pick.config_files()()]] },
           { key = "q", icon = icons.ui.Quit, desc = " Quit", action = "qa"},
         },
 
