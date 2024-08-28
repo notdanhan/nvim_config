@@ -23,6 +23,10 @@ vim.opt.formatoptions:remove("o")
 vim.cmd([[set termguicolors]])
 vim.cmd([[filetype plugin indent on]])
 
+-- Turn on spell check
+vim.opt.spelllang = "en_gb"
+vim.opt.spell = true
+
 vim.g.bullets_enabled_file_types = {
 	"gitcommit",
 	"markdown",
