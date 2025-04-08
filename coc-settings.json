@@ -1,4 +1,5 @@
 {
   "sumneko-lua.enableNvimLuaDev": true,
-  "Lua.telemetry.enable": false
+  "Lua.telemetry.enable": false,
+  "java.home":"/usr/lib64/jvm/java"
 }
